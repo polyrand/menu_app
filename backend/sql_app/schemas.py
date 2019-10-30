@@ -25,7 +25,7 @@ class Restaurant(RestaurantBase):
 class MenuItemBase(BaseModel):
     name: str
     description: str
-    price: float
+    price: str
     course: str
     restaurant_id: int
 

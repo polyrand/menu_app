@@ -8,7 +8,8 @@ from . import models, schemas
 
 # RESTAURANTS
 def get_restaurants(db: Session):
-    return db.query(models.Restaurant).all()
+    q = db.query(models.Restaurant).all()
+    return q
 
 
 def get_restaurant(db: Session, restaurant_id: int):
@@ -79,10 +80,15 @@ def update_menu_item(db: Session, restaurant_id: int, menu_id: int):
 
 
 def delete_menu_item(db: Session, restaurant_id: int, menu_id: int):
-    db_item_delete = db.query(models.MenuItem).filter(models.MenuItem.id == menu_id)
+    db_item_delete = (
+        db.query(models.MenuItem)
+        .filter(models.MenuItem.id == menu_id, models.Restaurant.id == restaurant_id)
+        .first()
+    )
+
+    print(db_item_delete)
 
     db.delete(db_item_delete)
-    db.comit()
-    db.refresh(db_item_delete)
+    db.commit()
 
     return db_item_delete

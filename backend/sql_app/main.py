@@ -71,7 +71,7 @@ def create_restaurant(
 
 # MENU ITEMS
 @app.get("/menus/", response_model=List[schemas.MenuItem])
-def read_menu_items(restaurant_id: int, db: Session = Depends(get_db)):
+def read_menu_items(db: Session = Depends(get_db)):
     """Read ALL menu items."""
     menu_items = crud.get_all_menu_items(db)
     return menu_items
@@ -84,11 +84,12 @@ def read_menu_item(restaurant_id: int, db: Session = Depends(get_db)):
     return menu_items
 
 
-@app.post("restaurant/{restaurant_id}/", response_model=schemas.MenuItem)
+@app.post("/restaurant/{restaurant_id}/", response_model=schemas.MenuItem)
 def create_menu_item(
     menu_item: schemas.MenuItemCreate, restaurant_id: int, db: Session = Depends(get_db)
 ):
     """Create new menu item."""
+    print(restaurant_id)
     # db_restaurant_menu_items = crud.get_menu_items(db, restaurant_id=restaurant_id)
     # Here we don't check since we can have the same menu item
     # multiple times. A restaurant may have the same dish for example
@@ -96,10 +97,12 @@ def create_menu_item(
     # if db_menu_item:
     #     raise HTTPException(status_code=400, detail="Item already exist")
 
+    menu_item = menu_item
+    menu_item.restaurant_id = restaurant_id
     return crud.create_menu_item(db=db, item=menu_item, restaurant_id=restaurant_id)
 
 
-@app.post("restaurant/{restaurant_id}/delete", response_model=schemas.MenuItem)
+@app.post("/restaurant/{restaurant_id}/delete", response_model=schemas.MenuItem)
 def delete_menu_item(restaurant_id: int, menu_id: int, db: Session = Depends(get_db)):
     """Delete menu item (menu_id) from restaurant (restaurant_id)."""
     return crud.delete_menu_item(db=db, restaurant_id=restaurant_id, menu_id=menu_id)
